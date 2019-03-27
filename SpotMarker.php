@@ -1,13 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE php>
 <html>
 <head>
 	<meta charset="utf-8"/>
 	<title>Daum 지도 시작하기</title>
 </head>
 <body>
-	<?php
-		echo "<h1>testing</h1>"
-	?>
 	<div id="map" style="width:800px;height:600px;"></div>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=19e3041c91b06a8d81b09ea22d8d8424&libraries=services"></script>
 	<script>
@@ -79,5 +76,8 @@
 		}
 
 	</script>
+	<?php
+		echo "<h1>testing</h1>"
+	?>
 </body>
 </html>
