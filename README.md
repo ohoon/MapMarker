@@ -1,2 +1,2 @@
 # SpotMarker
-Numerous Spot is wanted by owner is marked in map.
+Numerous Spot wanted by owner is marked in map.
