@@ -131,7 +131,7 @@
 						});
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
-						daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, clickList));
+						daum.maps.event.addListener(marker, 'mouseover' && 'click', clickListener(marker, markerImage, clickImage, clickList));
 					}
 					idx++;
 				});
