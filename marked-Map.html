@@ -36,10 +36,19 @@
 			};
 		}
 		
-		function clickListener(marker, clickImage) {
-			return function() {
-				marker.setImage(clickImage);	
-			};
+		function clickListener(marker, markerImage, clickImage, clickList) {
+			if (marker in clickList){
+				return function() {
+					clickList.push(marker);
+					marker.setImage(markerImage);	
+				};
+			}
+			else {
+				return function() {
+					clickList.push(marker);
+					marker.setImage(clickImage);	
+				};
+			}
 		}
 
 		function handleFiles(files) {
@@ -122,7 +131,7 @@
 						});
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
-						daum.maps.event.addListener(marker, 'click', clickListener(marker, clickImage));
+						daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, clickList));
 					}
 					idx++;
 				});
