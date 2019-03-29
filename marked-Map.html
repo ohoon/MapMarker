@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Daum 지도 시작하기</title>
+</head>
+<body>
+	<div id="map" style="width:60%;height:650pt;"></div>
+	<input type="file" id="csvFileInput" onchange="handleFiles(this.files)" accept=".csv">
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08129cb1b2094fd36eb2e23bd0b20804&libraries=services"></script>
+	<script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new daum.maps.LatLng(36.6043007,127.2963321),
+			level: 3
+		};
+
+		var map = new daum.maps.Map(container, options);
+
+		var mapTypeControl = new daum.maps.MapTypeControl();
+		map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+		var zoomControl = new daum.maps.ZoomControl();
+        map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+
+
+
+        function makeOverListener(map, marker, infowindow) {
+			return function() {
+				infowindow.open(map, marker);
+			};
+		}
+
+		function makeOutListener(infowindow) {
+			return function() {
+				infowindow.close();
+			};
+		}
+
+		function handleFiles(files) {
+			// Check for the various File API support.
+			if (window.FileReader) {
+				// FileReader are supported.
+				getAsText(files[0]);
+			} else {
+				alert('FileReader are not supported in this browser.');
+			}
+		}
+
+		function getAsText(fileToRead) {
+			var reader = new FileReader();
+			// Read file into memory as UTF-8
+			reader.readAsText(fileToRead);
+			// Handle errors load
+			reader.onload = loadHandler;
+			reader.onerror = errorHandler;
+		}
+
+		function loadHandler(event) {
+			var csv = event.target.result;
+			processData(csv);
+		}
+
+		function processData(csv) {
+			var allTextLines = csv.split(/\r\n|\n/);
+			var lines = [];
+			for (var i=0; i<allTextLines.length; i++) {
+				var data = allTextLines[i].split(',');
+				var tarr = [];
+				for (var j=0; j<data.length; j++) {
+					tarr.push(data[j]);
+				}
+				lines.push(tarr);
+			}
+			markInMap(lines);
+		}
+
+		function errorHandler(evt) {
+			if(evt.target.error.name == "NotReadableError") {
+				alert("Can't read file !");
+			}
+		}
+
+		function markInMap(lines) {
+			var positions = [];
+
+			for(var i = 0; i < lines.length-1; i++){
+				var data = [];
+				for(var j = 0; j < lines[i].length; j++){
+					data.push(lines[i][j]);
+				}
+				positions.push({
+							content: "<div>" + data[1] + "</div>",
+							addr: data[2]
+						});
+			}
+
+			var imageSrc = "https://github.com/ohoon/PlaceMarker/blob/master/markerStar.png";
+			var imageSize = new daum.maps.Size(24, 35);
+			var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
+			var geocoder = new daum.maps.services.Geocoder();
+			var idx = 0;
+			for (var i = 0; i < positions.length; i++) {
+				geocoder.addressSearch(positions[i].addr, function(result, status) {
+					if (status === daum.maps.services.Status.OK) {
+						var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+						var marker = new daum.maps.Marker({
+							map: map,
+							position: coords,
+							image: markerImage
+						});
+						var infowindow = new daum.maps.InfoWindow({
+							content: positions[idx].content
+						});
+						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+					}
+					idx++;
+				});
+			}
+		}
+
+	</script>
+</body>
+</html>
