@@ -35,6 +35,12 @@
 				infowindow.close();
 			};
 		}
+		
+		function clickListener(marker, clickImage) {
+			return function() {
+				marker.setImage(clickImage);	
+			};
+		}
 
 		function handleFiles(files) {
 			// Check for the various File API support.
@@ -95,8 +101,11 @@
 			}
 
 			var imageSrc = "markerStar.png";
+			var imageSrc2 = "markerStar2.png";
 			var imageSize = new daum.maps.Size(24, 35);
 			var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
+			var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
+			var clickList = [];
 			var geocoder = new daum.maps.services.Geocoder();
 			var idx = 0;
 			for (var i = 0; i < positions.length; i++) {
@@ -113,6 +122,7 @@
 						});
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+						daum.maps.event.addListener(marker, 'click', clickListener(marker, clickImage));
 					}
 					idx++;
 				});
