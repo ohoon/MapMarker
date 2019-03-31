@@ -176,7 +176,7 @@
 			var rowlen = table.rows.length;
 			var row = table.insertRow(rowlen-1);
 			for (var i=0; i<positions.length; i++){
-				if (positions[i].title == marker.title){
+				if (positions[i].title == marker.getTitle()){
 					row.insertCell(0).innerHTML = positions[i].title;
 					row.insertCell(1).innerHTML = positions[i].content;
 					row.insertCell(2).innerHTML = positions[i].addr;
