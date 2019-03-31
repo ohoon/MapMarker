@@ -37,19 +37,17 @@
 		}
 		
 		function clickListener(marker, markerImage, clickImage, clickList) {
-			if(marker){
-				if (marker in clickList){
-					return function() {
-						clickList.push(marker);
-						marker.setImage(markerImage);	
-					};
-				}
-				else {
-					return function() {
-						clickList.push(marker);
-						marker.setImage(clickImage);	
-					};
-				}
+			if (marker in clickList){
+				return function() {
+					clickList.push(marker);
+					marker.setImage(markerImage);	
+				};
+			}
+			else {
+				return function() {
+					clickList.push(marker);
+					marker.setImage(clickImage);	
+				};
 			}
 		}
 
