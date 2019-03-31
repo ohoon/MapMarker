@@ -25,15 +25,15 @@
 
 
 
-        function makeOverListener(map, marker, infowindow) {
+        function makeOverListener(map, overlay) {
 			return function() {
-				infowindow.open(map, marker);
+				overlay.setMap(map);
 			};
 		}
 
-		function makeOutListener(infowindow) {
+		function makeOutListener(overlay) {
 			return function() {
-				infowindow.close();
+				overlay.setMap(null);
 			};
 		}
 		
