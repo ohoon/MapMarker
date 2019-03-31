@@ -27,6 +27,12 @@
 
         function makeOverListener(map, overlay) {
 			return function() {
+				if(!event){
+					window.event.cancelBubble(true);	
+				}
+				else {
+					event.stopPropagation();	
+				}
 				if(overlay.map == null){
 					overlay.setMap(map);
 				}
@@ -35,6 +41,12 @@
 
 		function makeOutListener(overlay) {
 			return function() {
+				if(!event){
+					window.event.cancelBubble(true);	
+				}
+				else {
+					event.stopPropagation();	
+				}
 				overlay.setMap(null);
 			};
 		}
