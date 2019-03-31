@@ -27,7 +27,7 @@
 
         function makeOverListener(map, overlay) {
 			return function() {
-				if(!overlay.map){
+				if(overlay.map == null){
 					overlay.setMap(map);
 				}
 			};
@@ -131,6 +131,7 @@
 						});
 						var overlay = new daum.maps.CustomOverlay({
 							content: positions[idx].content,
+							map: null,
 					    		position: marker.getPosition()       
 						});
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, overlay));
