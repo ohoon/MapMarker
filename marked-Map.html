@@ -73,6 +73,7 @@
 					clickList.splice(idx, 1);
 					marker.setImage(markerImage);
 					overlay.setMap(null);
+					delRow(marker);
 				}
 			};
 		}
@@ -182,6 +183,16 @@
 					row.insertCell(2).innerHTML = "<center>" + positions[i].addr + "</center>";
 					row.insertCell(3).innerHTML = "";
 					break;
+				}
+			}
+		}
+		
+		function delRow() {
+			var table = document.getElementById('list');
+			var rowlen = table.rows.length;
+			for (var i=1; i<rowlen; i++) {
+				if (table.rows[i].cells[0] == marker.getTitle()) {
+					table.deleteRow(i);	
 				}
 			}
 		}
