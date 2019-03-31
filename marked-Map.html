@@ -37,7 +37,7 @@
 		}
 		
 		function clickListener(marker, markerImage, clickImage, clickList) {
-			if (clickList.indexOf(marker)){
+			if (var i = clickList.indexOf(marker)){
 				return function() {
 					clickList.delete(i);
 					marker.setImage(markerImage);	
