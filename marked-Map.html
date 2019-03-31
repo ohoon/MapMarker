@@ -141,7 +141,8 @@
 						});
 						for (var j=0; j<positions.length; j++) {
 							if (positions[j].addr == result[0].address_name){
-								overlay.content = positions[j].content;
+								overlay.setContent(positions[j].content);
+								break;
 							}
 						}
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, overlay, clickList));
