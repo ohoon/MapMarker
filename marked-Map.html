@@ -127,7 +127,7 @@
 			var geocoder = new daum.maps.services.Geocoder();
 			var idx = 0;
 			for (var i = 0; i < positions.length; i++) {
-				geocoder.addressSearch(positions[idx].addr, function(result, status) {
+				geocoder.addressSearch(positions[i].addr, function(result, status) {
 					if (status === daum.maps.services.Status.OK) {
 						var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 						var marker = new daum.maps.Marker({
