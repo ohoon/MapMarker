@@ -1,4 +1,4 @@
-.label {position: absolute;right: 0px;bottom: 35px;}
+.label {position: absolute;left: -25px;bottom: 35px;}
 .label * {display: inline-block;vertical-align: top;}
 .label .left {background: url("http://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
 .label .center {background: url(http://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
