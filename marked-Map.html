@@ -37,7 +37,7 @@
 		}
 		
 		function clickListener(marker, markerImage, clickImage, clickList) {
-			if (marker in clickList){
+			if (clickList.includes(marker)){
 				return function() {
 					clickList.push(marker);
 					marker.setImage(markerImage);	
