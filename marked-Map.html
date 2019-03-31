@@ -27,7 +27,9 @@
 
         function makeOverListener(map, overlay) {
 			return function() {
-				overlay.setMap(map);
+				if(!overlay.map){
+					overlay.setMap(map);
+				}
 			};
 		}
 
