@@ -7,23 +7,25 @@
 </head>
 <body>
 	<div id="map" style="width:60%;height:650pt;"></div>
-	<input type="file" id="csvFileInput" onchange="handleFiles(this.files)" accept=".csv">
-	<table id='table1' width='400' border="1" align="center">
-		<colgroup>
-			<col width='20%' />
-			<col width='20%' />
-			<col width='20%' />
-			<col width='20%' />
-			<col width='20%' />
-		</colgroup>
-		<tr id='row1'>
-			<td align='center'> 첫번째 </td>
-			<td align='center'> 두번째 </td>
-			<td align='center'> 세번째 </td>
-			<td align='center'> 네번째 </td>
-			<td align='center'> 다섯번째 </td>
-		</tr>
-	</table>
+	<div id="info" style="width:40%;">
+		<input type="file" id="csvFileInput" onchange="handleFiles(this.files)" accept=".csv">
+		<table id='table1' width='400' border="1" align="center">
+			<colgroup>
+				<col width='20%' />
+				<col width='20%' />
+				<col width='20%' />
+				<col width='20%' />
+				<col width='20%' />
+			</colgroup>
+			<tr id='row1'>
+				<td align='center'> 첫번째 </td>
+				<td align='center'> 두번째 </td>
+				<td align='center'> 세번째 </td>
+				<td align='center'> 네번째 </td>
+				<td align='center'> 다섯번째 </td>
+			</tr>
+		</table>
+	</div>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08129cb1b2094fd36eb2e23bd0b20804&libraries=services"></script>
 	<script>
 		var container = document.getElementById('map');
