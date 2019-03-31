@@ -25,9 +25,12 @@
 
 
 
-        function makeOverListener(map, overlay) {
+        function makeOverListener(map, marker, overlay, clickList) {
 			return function() {
-				overlay.setMap(map);
+				var idx = clickList.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(map);
+				}
 			};
 		}
 
@@ -40,16 +43,18 @@
 			};
 		}
 		
-		function clickListener(marker, markerImage, clickImage, clickList) {
+		function clickListener(map, marker, markerImage, clickImage, overlay, clickList) {
 			return function() {
 				var idx = clickList.indexOf(marker);
 				if (idx == -1){
 					clickList.push(marker);
 					marker.setImage(clickImage);
+					overlay.setMap(map);
 				}
 				else {
 					clickList.splice(idx, 1);
 					marker.setImage(markerImage);
+					overlay.setMap(null);
 				}
 			};
 		}
@@ -135,9 +140,9 @@
 							map: null,
 					    		position: marker.getPosition()       
 						});
-						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, overlay));
+						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, overlay, clickList));
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
-						daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, clickList));
+						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
 					}
 					idx++;
 				});
