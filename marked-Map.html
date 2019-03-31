@@ -125,7 +125,6 @@
 			var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
 			var clickList = [];
 			var geocoder = new daum.maps.services.Geocoder();
-			var idx = 0;
 			for (var i = 0; i < positions.length; i++) {
 				geocoder.addressSearch(positions[i].addr, function(result, status) {
 					if (status === daum.maps.services.Status.OK) {
@@ -136,7 +135,7 @@
 							image: markerImage
 						});
 						var overlay = new daum.maps.CustomOverlay({
-							content: positions[idx].content,
+							content: positions[positions.addr.indexOf(result.address_name)].content,
 							map: null,
 					    		position: marker.getPosition()       
 						});
@@ -144,7 +143,6 @@
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
 						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
 					}
-					idx++;
 				});
 			}
 		}
