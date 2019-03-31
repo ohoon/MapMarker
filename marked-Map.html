@@ -60,13 +60,14 @@
 			};
 		}
 		
-		function clickListener(marker, markerImage, clickImage, overlay, clickList) {
+		function clickListener(marker, positions, markerImage, clickImage, overlay, clickList) {
 			return function() {
 				var idx = clickList.indexOf(marker);
 				if (idx == -1){
 					clickList.push(marker);
 					marker.setImage(clickImage);
 					overlay.setMap(map);
+					addRow(marker, positions);
 				}
 				else {
 					clickList.splice(idx, 1);
@@ -125,18 +126,20 @@
 				if (status === daum.maps.services.Status.OK) {
 					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 					var marker = new daum.maps.Marker({
+						title: positions[idx].title,
 						map: map,
 						position: coords,
 						image: markerImage
 					});
 					var overlay = new daum.maps.CustomOverlay({
-						content: positions[idx].content,
+						content: "<div class ='label'><span class='left'></span><span class='center'>"
+					+ positions[idx].content + "</span><span class='right'></span></div>",
 						map: null,
 						position: marker.getPosition()       
 					});
 					daum.maps.event.addListener(marker, 'mouseover', makeOverListener(marker, overlay, clickList));
 					daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
-					daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, overlay, clickList));
+					daum.maps.event.addListener(marker, 'click', clickListener(marker, positions, markerImage, clickImage, overlay, clickList));
 				}
 			}	
 		}
@@ -150,8 +153,8 @@
 					data.push(lines[i][j]);
 				}
 				positions.push({
-							content: "<div class ='label'><span class='left'></span><span class='center'>"
-					+ data[1] + "</span><span class='right'></span></div>",
+							title: data[0],
+							content: data[1],
 							addr: data[2]
 						});
 			}
@@ -167,7 +170,21 @@
 				geocoder.addressSearch(positions[i].addr, markerHandler(i, positions, markerImage, clickImage, clickList));
 			}
 		}
-
+		
+		function addRow(marker, positions) {
+			var table = document.getElementById('list');
+			var rowlen = table.rows.length;
+			var row = table.insertRow(rowlen-1);
+			for (var i=0; i<positions.length; i++){
+				if (positions[i].title == marker.title){
+					row.insertCell(0).innerHTML = positions[i].title;
+					row.insertCell(1).innerHTML = positions[i].content;
+					row.insertCell(2).innerHTML = positions[i].addr;
+					row.insertCell(3).innerHTML = "";
+					break;
+				}
+			}
+		}
 	</script>
 </body>
 </html>
