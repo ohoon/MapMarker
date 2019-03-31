@@ -29,22 +29,22 @@
 		table.setAttribute('border', '3px');
 		var tr = document.createElement('tr');
 		table.appendChild(tr);
-		var td[0] = document.createElement('td');
-		td[0].setAttribute('border-bottom', '1px solid');
-		var td[1] = document.createElement('td');
-		td[1].setAttribute('border-bottom', '1px solid');
-		var td[2] = document.createElement('td');
-		td[2].setAttribute('border-bottom', '1px solid');
-		var td[3] = document.createElement('td');
-		td[3].setAttribute('border-bottom', '1px solid');
-		td[0].innerHTML = '연번';
-		td[1].innerHTML = '업소명';
-		td[2].innerHTML = '주소';
-		td[3].innerHTML = '비고';
-		tr.appendChild(td[0]);
-		tr.appendChild(td[1]);
-		tr.appendChild(td[2]);
-		tr.appendChild(td[3]);
+		var td = document.createElement('td');
+		td.setAttribute('border-bottom', '1px solid');
+		var td2 = document.createElement('td');
+		td2.setAttribute('border-bottom', '1px solid');
+		var td3 = document.createElement('td');
+		td3.setAttribute('border-bottom', '1px solid');
+		var td4 = document.createElement('td');
+		td4.setAttribute('border-bottom', '1px solid');
+		td1.innerHTML = '연번';
+		td2.innerHTML = '업소명';
+		td3.innerHTML = '주소';
+		td4.innerHTML = '비고';
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tr.appendChild(td3);
+		tr.appendChild(td4);
 		
         	function makeOverListener(marker, overlay, clickList) {
 			return function() {
