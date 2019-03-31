@@ -44,7 +44,7 @@
 					marker.setImage(clickImage);
 				}
 				else {
-					delete clickList[idx];
+					clickList.splice(idx, 1);
 					marker.setImage(markerImage);
 				}
 			};
