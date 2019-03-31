@@ -8,6 +8,7 @@
 <body>
 	<div id="map" style="width:60%;height:650pt;"></div>
 	<input type="file" id="csvFileInput" onchange="handleFiles(this.files)" accept=".csv">
+	<div id="getTable" style="width:40%"></div>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08129cb1b2094fd36eb2e23bd0b20804&libraries=services"></script>
 	<script>
 		var container = document.getElementById('map');
@@ -22,9 +23,23 @@
 		map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
 		var zoomControl = new daum.maps.ZoomControl();
         	map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
-
-
-
+		
+		var div = document.getElementById('getTable');
+		var table = document.createElement('table');
+		div.appendChild(table);
+		table.setAttribute('border', '3px');
+		var tr = document.createElement('tr');
+		table.appendChild(tr);
+		for (var i=0; i<4; i++){
+			var td[i] = document.createElement('td');
+			td[i].setAttribute('border-bottom', '1px solid');
+			tr.appendChild(td[i]);
+		}
+		td[0].innerHTML = '연번';
+		td[1].innerHTML = '업소명';
+		td[2].innerHTML = '주소';
+		td[3].innerHTML = '비고';
+		
         	function makeOverListener(marker, overlay, clickList) {
 			return function() {
 				var idx = clickList.indexOf(marker);
