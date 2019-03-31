@@ -129,7 +129,6 @@
 						});
 						var overlay = new daum.maps.CustomOverlay({
 							content: positions[idx].content,
-					    		map: map,
 					    		position: marker.getPosition()       
 						});
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, overlay));
