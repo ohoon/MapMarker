@@ -138,7 +138,7 @@
 						var overlay = new daum.maps.CustomOverlay({
 							content: positions[idx].content,
 							map: null,
-					    		position: marker.getPosition()       
+					    		position: marker.getPosition()+(10,0)       
 						});
 						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
 					}
