@@ -10,10 +10,10 @@
 	<div id="info" style="width:40%;">
 		<table id='list' width='100%' border="1px" align="center">
 			<colgroup>
-				<col width='10%' />
+				<col width='5%' />
 				<col width='20%' />
 				<col width='50%' />
-				<col width='20%' />
+				<col width='25%' />
 			</colgroup>
 			<tr id='row'>
 				<td align='center'> 연번 </td>
@@ -174,12 +174,12 @@
 		function addRow(marker, positions) {
 			var table = document.getElementById('list');
 			var rowlen = table.rows.length;
-			var row = table.insertRow(rowlen-1);
+			var row = table.insertRow(rowlen);
 			for (var i=0; i<positions.length; i++){
 				if (positions[i].title == marker.getTitle()){
-					row.insertCell(0).innerHTML = positions[i].title;
-					row.insertCell(1).innerHTML = positions[i].content;
-					row.insertCell(2).innerHTML = positions[i].addr;
+					row.insertCell(0).innerHTML = "<center>" + positions[i].title + "</center>";
+					row.insertCell(1).innerHTML = "<center>" + positions[i].content + "</center>";
+					row.insertCell(2).innerHTML = "<center>" + positions[i].addr + "</center>";
 					row.insertCell(3).innerHTML = "";
 					break;
 				}
