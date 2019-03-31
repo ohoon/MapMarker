@@ -30,15 +30,22 @@
 		table.setAttribute('border', '3px');
 		var tr = document.createElement('tr');
 		table.appendChild(tr);
-		for (var i=0; i<4; i++){
-			var td[i] = document.createElement('td');
-			td[i].setAttribute('border-bottom', '1px solid');
-			tr.appendChild(td[i]);
-		}
+		var td[0] = document.createElement('td');
+		td[0].setAttribute('border-bottom', '1px solid');
+		var td[1] = document.createElement('td');
+		td[1].setAttribute('border-bottom', '1px solid');
+		var td[2] = document.createElement('td');
+		td[2].setAttribute('border-bottom', '1px solid');
+		var td[3] = document.createElement('td');
+		td[3].setAttribute('border-bottom', '1px solid');
 		td[0].innerHTML = '연번';
 		td[1].innerHTML = '업소명';
 		td[2].innerHTML = '주소';
 		td[3].innerHTML = '비고';
+		tr.appendChild(td[0]);
+		tr.appendChild(td[1]);
+		tr.appendChild(td[2]);
+		tr.appendChild(td[3]);
 		
         	function makeOverListener(marker, overlay, clickList) {
 			return function() {
