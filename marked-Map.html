@@ -37,18 +37,18 @@
 		}
 		
 		function clickListener(marker, markerImage, clickImage, clickList) {
-			if (clickList.contains(marker)){
-				return function() {
-					clickList.push(marker);
-					marker.setImage(markerImage);	
-				};
+			for(var i=0; i<clickList.length; i++){
+				if (marker == clickList[i]){
+					return function() {
+						clickList.delete(i);
+						marker.setImage(markerImage);	
+					};
+				}
 			}
-			else {
-				return function() {
-					clickList.push(marker);
-					marker.setImage(clickImage);	
-				};
-			}
+			return function() {
+				clickList.push(marker);
+				marker.setImage(clickImage);	
+			};
 		}
 
 		function handleFiles(files) {
