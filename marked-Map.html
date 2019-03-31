@@ -140,6 +140,8 @@
 							map: null,
 					    		position: marker.getPosition()       
 						});
+						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, overlay, clickList));
+						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
 						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
 					}
 					idx++;
