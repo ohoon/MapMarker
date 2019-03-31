@@ -106,7 +106,7 @@
 		function markInMap(lines) {
 			var positions = [];
 
-			for(var i = 0; i < lines.length-1; i++){
+			for (var i=0; i<lines.length-1; i++){
 				var data = [];
 				for(var j = 0; j < lines[i].length; j++){
 					data.push(lines[i][j]);
@@ -125,7 +125,7 @@
 			var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
 			var clickList = [];
 			var geocoder = new daum.maps.services.Geocoder();
-			for (var i = 0; i < positions.length; i++) {
+			for (var i=0; i<positions.length; i++) {
 				geocoder.addressSearch(positions[i].addr, function(result, status) {
 					if (status === daum.maps.services.Status.OK) {
 						var coords = new daum.maps.LatLng(result[0].y, result[0].x);
@@ -135,10 +135,15 @@
 							image: markerImage
 						});
 						var overlay = new daum.maps.CustomOverlay({
-							content: positions[positions.addr.indexOf(result.address_name)].content,
+							content: null,
 							map: null,
 					    		position: marker.getPosition()       
 						});
+						for (var j=0; j<positions.length; j++) {
+							if (positions[j].addr == result.address_name){
+								overlay.content = positions[j].content;
+							}
+						}
 						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, overlay, clickList));
 						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
 						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
