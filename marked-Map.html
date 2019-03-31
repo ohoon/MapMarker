@@ -21,11 +21,11 @@
 		var mapTypeControl = new daum.maps.MapTypeControl();
 		map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
 		var zoomControl = new daum.maps.ZoomControl();
-        map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+        	map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
 
 
 
-        function makeOverListener(map, marker, overlay, clickList) {
+        	function makeOverListener(marker, overlay, clickList) {
 			return function() {
 				var idx = clickList.indexOf(marker);
 				if (idx == -1){
@@ -43,7 +43,7 @@
 			};
 		}
 		
-		function clickListener(map, marker, markerImage, clickImage, overlay, clickList) {
+		function clickListener(marker, markerImage, clickImage, overlay, clickList) {
 			return function() {
 				var idx = clickList.indexOf(marker);
 				if (idx == -1){
@@ -102,6 +102,27 @@
 				alert("Can't read file !");
 			}
 		}
+		
+		function markerHandler(idx, positions, markerImage, clickImage, clickList) {
+			return function(result, status) {
+				if (status === daum.maps.services.Status.OK) {
+					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+					var marker = new daum.maps.Marker({
+						map: map,
+						position: coords,
+						image: markerImage
+					});
+					var overlay = new daum.maps.CustomOverlay({
+						content: positions[idx].content,
+						map: null,
+						position: marker.getPosition()       
+					});
+					daum.maps.event.addListener(marker, 'mouseover', makeOverListener(marker, overlay, clickList));
+					daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
+					daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, overlay, clickList));
+				}
+			}	
+		}
 
 		function markInMap(lines) {
 			var positions = [];
@@ -126,30 +147,7 @@
 			var clickList = [];
 			var geocoder = new daum.maps.services.Geocoder();
 			for (var i=0; i<positions.length; i++) {
-				geocoder.addressSearch(positions[i].addr, function(result, status) {
-					if (status === daum.maps.services.Status.OK) {
-						var coords = new daum.maps.LatLng(result[0].y, result[0].x);
-						var marker = new daum.maps.Marker({
-							map: map,
-							position: coords,
-							image: markerImage
-						});
-						var overlay = new daum.maps.CustomOverlay({
-							content: null,
-							map: null,
-					    		position: marker.getPosition()       
-						});
-						for (var j=0; j<positions.length; j++) {
-							if (positions[j].addr == result[0].address_name){
-								overlay.setContent(positions[j].content);
-								break;
-							}
-						}
-						daum.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, overlay, clickList));
-						daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay, clickList));
-						daum.maps.event.addListener(marker, 'click', clickListener(map, marker, markerImage, clickImage, overlay, clickList));
-					}
-				});
+				geocoder.addressSearch(positions[i].addr, markerHandler(i, positions, markerImage, clickImage, clickList));
 			}
 		}
 
