@@ -134,6 +134,12 @@
 							map: null,
 					    		position: marker.getPosition()       
 						});
+						if(!event){
+							window.event.cancelBubble(true);	
+						}
+						else {
+							event.stopPropagation();	
+						}
 						daum.maps.event.addListener(marker, 'mouseenter', makeOverListener(map, overlay));
 						daum.maps.event.addListener(marker, 'mouseleave', makeOutListener(overlay));
 						daum.maps.event.addListener(marker, 'click', clickListener(marker, markerImage, clickImage, clickList));
