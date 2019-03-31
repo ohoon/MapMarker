@@ -191,7 +191,7 @@
 			var table = document.getElementById('list');
 			var rowlen = table.rows.length;
 			for (var i=1; i<rowlen; i++) {
-				if (table.rows[i].cells[0] == marker.getTitle()) {
+				if (table.rows[i].cells[0].innerText == marker.getTitle()) {
 					table.deleteRow(i);	
 				}
 			}
