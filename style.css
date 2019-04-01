@@ -1,10 +1,20 @@
-.label {position:relative;bottom:35pt;}
+html, body {width: 99%;height: 99%;margin: 0px;padding: 0px; font-family: "나눔고딕";}
+.label {position: relative;bottom: 35pt;}
 .label * {display: inline-block;vertical-align: top;}
 .label .left {background: url("tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
 .label .center {background: url("tip_bg.png") repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
 .label .right {background: url("tip_r.png") -1px 0  no-repeat;display: inline-block;height: 24px;overflow: hidden;width: 6px;}
 
-div {}
-#map {float: left;}
+div {margin: 1px;padding: 1px;}
+#data {float: left;}
+#txtFileInput {margin-right: 4%;}
 #info {float: right;}
-#file {clear: both;}
+
+#list {font-size: 11pt;border-collapse: collapse;width: 100%;}
+#list td, th {border: 1px solid #ddd;padding: 3px;}
+#list tr:nth-child(even){background-color: #f2f2f2;}
+#list tr:hover {background-color: #ddd;}
+#list th {padding-top: 8px;padding-bottom: 8px;background-color: #4CAF50;color: white;}
+
+.button {background-color: #4CAF50;border: none;color: white;padding: 6px 18px;text-align: center;text-decoration: none;display: inline-block;font-size: 13px;}
+#roundbox {border-radius: 5px;background: #4CAF50;padding: 5px;padding-left: 10px;padding-right: 10px;width: 60px;height: 30px;font-size: 10pt;color: white;}
