@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>PlaceMarker</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="data" style="width:59%;height:100%;">
+		<div id="map" style="width:100%;height:98%;"></div>
+		<font id="roundbox">엑셀자료목록(txt)</font>
+		<input type="file" id="txtFileInput" onchange="handleFiles(this.files)" accept=".txt">
+		<button class="button" onclick="setMarkers(null)">미선택 마커 감추기</button>
+		<button class="button" onclick="setMarkers(map)">보이기</button>
+		<button class="button" onclick="refresh()">마커 리셋</button>
+	</div>
+	<div id="info" style="width:40%;">
+		<table id='list' width='100%' border="1px solid black"; align="center">
+			<colgroup>
+				<col width='5%' />
+				<col width='20%' />
+				<col width='50%' />
+				<col width='25%' />
+			</colgroup>
+			<tr id='row' bgcolor="#EAEAEA">
+				<th align='center'> No. </th>
+				<th align='center'> 업소명 </th>
+				<th align='center'> 주소 </th>
+				<th align='center'> 비고 </th>
+			</tr>
+		</table>
+	</div>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08129cb1b2094fd36eb2e23bd0b20804&libraries=services"></script>
+	<script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new daum.maps.LatLng(36.6043007,127.2963321),
+			level: 3
+		};
+
+		var map = new daum.maps.Map(container, options);
+
+		var mapTypeControl = new daum.maps.MapTypeControl();
+		map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+		var zoomControl = new daum.maps.ZoomControl();
+        map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+
+		var imageSrc = "markerStar.png";
+		var imageSrc2 = "markerStar2.png";
+		var imageSize = new daum.maps.Size(24, 35);
+		var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
+		var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
+		var markers = [];
+		var clickList = [];
+		var clickOverlay = [];
+		var positions = [];
+		var geocoder = new daum.maps.services.Geocoder();
+
+		function makeOverListener(marker, overlay) {
+			return function() {
+				var idx = clickList.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(map);
+				}
+			};
+		}
+
+		function makeOutListener(marker, overlay) {
+			return function() {
+				var idx = clickList.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(null);
+				}
+			};
+		}
+
+		function clickListener(marker, overlay) {
+			return function() {
+				var idx = clickList.indexOf(marker);
+				if (idx == -1){
+					clickList.push(marker);
+					clickOverlay.push(overlay);
+					marker.setImage(clickImage);
+					overlay.setMap(map);
+					addRow(marker);
+				}
+				else {
+					clickList.splice(idx, 1);
+					clickOverlay.splice(idx, 1);
+					marker.setImage(markerImage);
+					overlay.setMap(null);
+					delRow(marker);
+				}
+			};
+		}
+
+		function handleFiles(files) {
+			// Check for the various File API support.
+			if (window.FileReader) {
+				// FileReader are supported.
+				getAsText(files[0]);
+			} else {
+				alert('FileReader are not supported in this browser.');
+			}
+		}
+
+		function getAsText(fileToRead) {
+			var reader = new FileReader();
+			// Read file into memory as UTF-8
+			reader.readAsText(fileToRead);
+			// Handle errors load
+			reader.onload = loadHandler;
+			reader.onerror = errorHandler;
+		}
+
+		function loadHandler(event) {
+			var txt = event.target.result;
+			processData(txt);
+		}
+
+		function processData(txt) {
+			var allTextLines = txt.split(/\r\n|\n/);
+			var lines = [];
+			for (var i=0; i<allTextLines.length; i++) {
+				var data = allTextLines[i].split('\t');
+				var tarr = [];
+				for (var j=0; j<data.length; j++) {
+					tarr.push(data[j]);
+				}
+				lines.push(tarr);
+			}
+			markInMap(lines);
+		}
+
+		function errorHandler(evt) {
+			if(evt.target.error.name == "NotReadableError") {
+				alert("Can't read file !");
+			}
+		}
+
+		function markerHandler(idx) {
+			return function(result, status) {
+				if (status === daum.maps.services.Status.OK) {
+					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+					var title = positions[idx].title;
+					var etc = ""
+					var count = 0;
+					for (var i=0; i<positions.length; i++){
+						if (i != idx && positions[i].addr == positions[idx].addr) {
+							title = title + " " + positions[i].title;
+							count++;
+						}
+					}
+					if (count>0) {
+						etc = " 외 " + count;
+					}
+
+					var marker = new daum.maps.Marker({
+						title: title,
+						map: map,
+						position: coords,
+						image: markerImage
+					});
+					markers.push(marker);
+
+					var overlay = new daum.maps.CustomOverlay({
+						content: "<div class ='label'><span class='left'></span><span class='center'>"
+					+ positions[idx].content + etc + "</span><span class='right'></span></div>",
+						map: null,
+						position: marker.getPosition()
+					});
+					daum.maps.event.addListener(marker, 'mouseover', makeOverListener(marker, overlay));
+					daum.maps.event.addListener(marker, 'mouseout', makeOutListener(marker, overlay));
+					daum.maps.event.addListener(marker, 'click', clickListener(marker, overlay));
+				}
+			}
+		}
+
+		function markInMap(lines) {
+			positions = [];
+			markers = [];
+			clickList = [];
+			clickOverlay = [];
+
+			for (var i=0; i<lines.length-1; i++){
+				var data = [];
+				for(var j = 0; j < lines[i].length; j++){
+					data.push(lines[i][j]);
+				}
+				positions.push({
+							title: data[0],
+							content: data[1],
+							addr: data[2]
+						});
+			}
+
+			for (var i=positions.length-1; i>=0; i--) {
+				geocoder.addressSearch(positions[i].addr, markerHandler(i));
+			}
+		}
+
+		function setMarkers(map) {
+			for (var i = 0; i < markers.length; i++) {
+				var idx = clickList.indexOf(markers[i]);
+				if (idx == -1){
+					markers[i].setMap(map);
+				}
+			}
+		}
+
+		function addRow(marker) {
+			var table = document.getElementById('list');
+			var rowlen = table.rows.length;
+			var row = table.insertRow(rowlen);
+			var titleArr = marker.getTitle().split(' ');
+			var etc = "";
+			for (var i=0; i<positions.length; i++) {
+				for (var j=1; j<titleArr.length; j++) {
+					if (positions[i].title == titleArr[j]) {
+						etc = etc + "(" + positions[i].title + ")" + positions[i].content + " ";
+					}
+				}
+				if (positions[i].title == titleArr[0]) {
+					row.insertCell(0).innerHTML = "<center>" + positions[i].title + "</center>";
+					row.insertCell(1).innerHTML = "<center>" + positions[i].content + "</center>";
+					row.insertCell(2).innerHTML = "<center>" + positions[i].addr + "</center>";
+				}
+			}
+			row.insertCell(3).innerHTML = "<center>" + etc + "</center>";
+		}
+
+		function delRow(marker) {
+			var table = document.getElementById('list');
+			var rowlen = table.rows.length;
+			var titleArr = marker.getTitle().split(' ');
+			for (var i=1; i<rowlen; i++) {
+				if (table.rows[i].cells[0].innerText == titleArr[0]) {
+					table.deleteRow(i);
+				}
+			}
+		}
+
+		function refresh() {
+			for (var i=clickList.length-1; i>=0; i--) {
+				clickList[i].setImage(markerImage);
+				clickOverlay[i].setMap(null);
+				delRow(clickList[i]);
+				clickList.splice(i, 1);
+				clickOverlay.splice(i, 1);
+			}
+			setMarkers(map);
+		}
+	</script>
+</body>
+</html>
