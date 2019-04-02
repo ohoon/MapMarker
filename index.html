@@ -17,16 +17,14 @@
 	<div id="info" style="width:40%;">
 		<table id='list' width='100%' border="1px solid black"; align="center">
 			<colgroup>
-				<col width='5%' />
-				<col width='20%' />
-				<col width='50%' />
-				<col width='25%' />
+				<col width='8%' />
+				<col width='30%' />
+				<col width='62%' />
 			</colgroup>
 			<tr id='row' bgcolor="#EAEAEA">
 				<th align='center'> No. </th>
 				<th align='center'> 업소명 </th>
 				<th align='center'> 주소 </th>
-				<th align='center'> 비고 </th>
 			</tr>
 		</table>
 	</div>
@@ -51,9 +49,9 @@
 		var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
 		var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
 		var markers = [];
+		var positions = [];
 		var clickList = [];
 		var clickOverlay = [];
-		var positions = [];
 		var geocoder = new daum.maps.services.Geocoder();
 
 		function makeOverListener(marker, overlay) {
@@ -138,6 +136,35 @@
 			}
 		}
 
+		function markInMap(lines) {
+			refresh();
+			setMarkers(null);
+			markers = [];
+			positions = [];
+			clickList = [];
+			clickOverlay = [];
+
+			for (var i=0; i<lines.length-1; i++){
+				var data = [];
+
+				if (lines[i][3] == "방문") {
+					continue;
+				}
+				for(var j = 0; j < lines[i].length; j++){
+					data.push(lines[i][j]);
+				}
+				positions.push({
+							title: data[0],
+							content: data[1],
+							addr: data[2]
+						});
+			}
+
+			for (var i=0; i<positions.length; i++) {
+				geocoder.addressSearch(positions[i].addr, markerHandler(i));
+			}
+		}
+
 		function markerHandler(idx) {
 			return function(result, status) {
 				if (status === daum.maps.services.Status.OK) {
@@ -145,14 +172,19 @@
 					var title = positions[idx].title;
 					var etc = ""
 					var count = 0;
-					for (var i=0; i<positions.length; i++){
-						if (i != idx && positions[i].addr == positions[idx].addr) {
+					for (var i=0; i<markers.length; i++) {
+						if (positions[idx].addr == getAddr(markers[i]))	{
+							return;
+						}
+					}
+					for (var i=idx+1; i<positions.length; i++) {
+						if (positions[idx].addr == positions[i].addr) {
 							title = title + " " + positions[i].title;
 							count++;
 						}
 					}
 					if (count>0) {
-						etc = " 외 " + count;
+						etc = " 외 " + count + "곳";
 					}
 
 					var marker = new daum.maps.Marker({
@@ -176,26 +208,33 @@
 			}
 		}
 
-		function markInMap(lines) {
-			positions = [];
-			markers = [];
-			clickList = [];
-			clickOverlay = [];
-
-			for (var i=0; i<lines.length-1; i++){
-				var data = [];
-				for(var j = 0; j < lines[i].length; j++){
-					data.push(lines[i][j]);
+		function addRow(marker) {
+			var table = document.getElementById('list');
+			var titleArr = marker.getTitle().split(' ');
+			for (var i=0; i<positions.length; i++) {
+				for (var j=0; j<titleArr.length; j++) {
+					if (positions[i].title == titleArr[j]) {
+						var rowlen = table.rows.length;
+						var row = table.insertRow(rowlen);
+						row.insertCell(0).innerHTML = "<center>" + positions[i].title + "</center>";
+						row.insertCell(1).innerHTML = "<center>" + positions[i].content + "</center>";
+						row.insertCell(2).innerHTML = "<center>" + positions[i].addr + "</center>";
+					}
 				}
-				positions.push({
-							title: data[0],
-							content: data[1],
-							addr: data[2]
-						});
 			}
+		}
 
-			for (var i=positions.length-1; i>=0; i--) {
-				geocoder.addressSearch(positions[i].addr, markerHandler(i));
+		function delRow(marker) {
+			var table = document.getElementById('list');
+			var rowlen = table.rows.length;
+			var titleArr = marker.getTitle().split(' ');
+			for (var i=rowlen-1; i>0; i--) {
+				for (var j=titleArr.length-1; j>=0; j--){
+					if (table.rows[i].cells[0].innerText == titleArr[j]) {
+						table.deleteRow(i);
+						break;
+					}
+				}
 			}
 		}
 
@@ -204,38 +243,6 @@
 				var idx = clickList.indexOf(markers[i]);
 				if (idx == -1){
 					markers[i].setMap(map);
-				}
-			}
-		}
-
-		function addRow(marker) {
-			var table = document.getElementById('list');
-			var rowlen = table.rows.length;
-			var row = table.insertRow(rowlen);
-			var titleArr = marker.getTitle().split(' ');
-			var etc = "";
-			for (var i=0; i<positions.length; i++) {
-				for (var j=1; j<titleArr.length; j++) {
-					if (positions[i].title == titleArr[j]) {
-						etc = etc + "(" + positions[i].title + ")" + positions[i].content + " ";
-					}
-				}
-				if (positions[i].title == titleArr[0]) {
-					row.insertCell(0).innerHTML = "<center>" + positions[i].title + "</center>";
-					row.insertCell(1).innerHTML = "<center>" + positions[i].content + "</center>";
-					row.insertCell(2).innerHTML = "<center>" + positions[i].addr + "</center>";
-				}
-			}
-			row.insertCell(3).innerHTML = "<center>" + etc + "</center>";
-		}
-
-		function delRow(marker) {
-			var table = document.getElementById('list');
-			var rowlen = table.rows.length;
-			var titleArr = marker.getTitle().split(' ');
-			for (var i=1; i<rowlen; i++) {
-				if (table.rows[i].cells[0].innerText == titleArr[0]) {
-					table.deleteRow(i);
 				}
 			}
 		}
@@ -249,6 +256,15 @@
 				clickOverlay.splice(i, 1);
 			}
 			setMarkers(map);
+		}
+
+		function getAddr(marker) {
+			for (var i=0; i<positions.length; i++) {
+				var ta = marker.getTitle().split(' ');
+				if (ta[0] == positions[i].title) {
+					return positions[i].addr;
+				}
+			}
 		}
 	</script>
 </body>
