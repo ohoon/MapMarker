@@ -10,12 +10,12 @@
 		<div id="map" style="width:100%;height:98%;"></div>
 		<font id="roundbox">엑셀자료목록(txt)</font>
 		<input type="file" id="txtFileInput" onchange="handleFiles(this.files)" accept=".txt">
-		<button class="button" onclick="setMarkers(null)">미선택 마커 감추기</button>
-		<button class="button" onclick="setMarkers(map)">보이기</button>
-		<button class="button" onclick="refresh()">마커 리셋</button>
+		<input type="button" class="button" id="btn" style="width:15%;" onclick="setMod()" value="방문 완료 Ver.">
+		<input type="button" class="button" id="btn2" style="width:20%;" onclick="setMarkers(null)" value="미선택 마커 감추기">
+		<input type="button" class="button" style="width:12%;" onclick="refresh()" value="새로고침">
 	</div>
 	<div id="info" style="width:40%;">
-		<table id='list' width='100%' border="1px solid black"; align="center">
+		<table id='list' width='100%' border="1px solid black" align="center">
 			<colgroup>
 				<col width='8%' />
 				<col width='30%' />
@@ -43,54 +43,23 @@
 		var zoomControl = new daum.maps.ZoomControl();
         map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
 
-		var imageSrc = "markerStar.png";
-		var imageSrc2 = "markerStar2.png";
+		var imageSrc = "icon/markerStar.png";
+		var imageSrc2 = "icon/markerStar2.png";
+		var imageSrc3 = "icon/markerStar3.png";
+		var imageSrc4 = "icon/markerStar4.png";
 		var imageSize = new daum.maps.Size(24, 35);
 		var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
 		var clickImage = new daum.maps.MarkerImage(imageSrc2, imageSize);
+		var v_markerImage = new daum.maps.MarkerImage(imageSrc3, imageSize);
+		var v_clickImage = new daum.maps.MarkerImage(imageSrc4, imageSize);
 		var markers = [];
+		var v_markers = [];
 		var positions = [];
-		var clickList = [];
-		var clickOverlay = [];
+		var clickMarkers = [];
+		var v_clickMarkers = [];
+		var clickOverlays = [];
+		var v_clickOverlays = [];
 		var geocoder = new daum.maps.services.Geocoder();
-
-		function makeOverListener(marker, overlay) {
-			return function() {
-				var idx = clickList.indexOf(marker);
-				if (idx == -1){
-					overlay.setMap(map);
-				}
-			};
-		}
-
-		function makeOutListener(marker, overlay) {
-			return function() {
-				var idx = clickList.indexOf(marker);
-				if (idx == -1){
-					overlay.setMap(null);
-				}
-			};
-		}
-
-		function clickListener(marker, overlay) {
-			return function() {
-				var idx = clickList.indexOf(marker);
-				if (idx == -1){
-					clickList.push(marker);
-					clickOverlay.push(overlay);
-					marker.setImage(clickImage);
-					overlay.setMap(map);
-					addRow(marker);
-				}
-				else {
-					clickList.splice(idx, 1);
-					clickOverlay.splice(idx, 1);
-					marker.setImage(markerImage);
-					overlay.setMap(null);
-					delRow(marker);
-				}
-			};
-		}
 
 		function handleFiles(files) {
 			// Check for the various File API support.
@@ -139,29 +108,35 @@
 		function markInMap(lines) {
 			refresh();
 			setMarkers(null);
-			markers = [];
+			v_markers = [];
 			positions = [];
-			clickList = [];
-			clickOverlay = [];
+			clickMarkers = [];
+			v_clickMarkers = [];
+			clickOverlays = [];
+			v_clickOverlays = [];
 
-			for (var i=0; i<lines.length-1; i++){
+			for (var i=0; i<lines.length; i++){
 				var data = [];
 
-				if (lines[i][3] == "방문") {
-					continue;
-				}
 				for(var j = 0; j < lines[i].length; j++){
 					data.push(lines[i][j]);
 				}
 				positions.push({
 							title: data[0],
 							content: data[1],
-							addr: data[2]
-						});
+							addr: data[2],
+							status: data[3],
+							extra: data[4]
+				});
 			}
 
 			for (var i=0; i<positions.length; i++) {
-				geocoder.addressSearch(positions[i].addr, markerHandler(i));
+				if (positions[i].status == "방문") {
+					geocoder.addressSearch(positions[i].addr, v_markerHandler(i));
+				}
+				else {
+					geocoder.addressSearch(positions[i].addr, markerHandler(i));
+				}
 			}
 		}
 
@@ -178,7 +153,7 @@
 						}
 					}
 					for (var i=0; i<positions.length; i++) {
-						if (idx != i && positions[idx].addr == positions[i].addr) {
+						if (idx != i && positions[idx].addr == positions[i].addr && positions[i].status != "방문") {
 							title = title + " " + positions[i].title;
 							count++;
 						}
@@ -189,8 +164,8 @@
 
 					var marker = new daum.maps.Marker({
 						title: title,
-						map: map,
 						position: coords,
+						map: map,
 						image: markerImage
 					});
 					markers.push(marker);
@@ -206,6 +181,138 @@
 					daum.maps.event.addListener(marker, 'click', clickListener(marker, overlay));
 				}
 			}
+		}
+
+		function v_markerHandler(idx) {
+			return function(result, status) {
+				if (status === daum.maps.services.Status.OK) {
+					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+					var title = positions[idx].title;
+					var content = [];
+					var etc = ""
+					var count = 0;
+					for (var i=0; i<v_markers.length; i++) {
+						if (positions[idx].addr == getAddr(v_markers[i]))	{
+							return;
+						}
+					}
+					for (var i=idx+1; i<positions.length; i++) {
+						if (positions[idx].addr == positions[i].addr && positions[i].status == "방문") {
+							title = title + " " + positions[i].title;
+							count++;
+						}
+					}
+					if (count>0) {
+						etc = " 외 " + count + "곳";
+					}
+
+					var marker = new daum.maps.Marker({
+						title: title,
+						position: coords,
+						map: null,
+						image: v_markerImage
+					});
+					v_markers.push(marker);
+
+					var overlay = new daum.maps.CustomOverlay({
+						content: '<div class="wrap">' +
+									'    <div class="info">' +
+									'        <div class="title">' +
+									'            ' + positions[idx].content +
+									'        </div>' +
+									'        <div class="body">' +
+									'            <div class="img">' +
+									'                <img src="img/' + positions[idx].title + '.jpg" width="73" height="70">' +
+									'           </div>' +
+									'            <div class="desc">' +
+									'                <div class="ellipsis">' + positions[idx].addr + '</div>' +
+									'                <div class="jibun ellipsis">' + positions[idx].extra + '</div>' +
+									'            </div>' +
+									'        </div>' +
+									'    </div>' +
+									'</div>',
+						map: null,
+						position: marker.getPosition()
+					});
+					daum.maps.event.addListener(marker, 'mouseover', v_makeOverListener(marker, overlay));
+					daum.maps.event.addListener(marker, 'mouseout', v_makeOutListener(marker, overlay));
+					daum.maps.event.addListener(marker, 'click', v_clickListener(marker, overlay));
+				}
+			}
+		}
+
+		function makeOverListener(marker, overlay) {
+			return function() {
+				var idx = clickMarkers.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(map);
+				}
+			};
+		}
+
+		function makeOutListener(marker, overlay) {
+			return function() {
+				var idx = clickMarkers.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(null);
+				}
+			};
+		}
+
+		function clickListener(marker, overlay) {
+			return function() {
+				var idx = clickMarkers.indexOf(marker);
+				if (idx == -1){
+					clickMarkers.push(marker);
+					clickOverlays.push(overlay);
+					marker.setImage(clickImage);
+					overlay.setMap(map);
+					addRow(marker);
+				}
+				else {
+					clickMarkers.splice(idx, 1);
+					clickOverlays.splice(idx, 1);
+					marker.setImage(markerImage);
+					overlay.setMap(null);
+					delRow(marker);
+				}
+			};
+		}
+
+		function v_makeOverListener(marker, overlay) {
+			return function() {
+				var idx = v_clickMarkers.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(map);
+				}
+			};
+		}
+
+		function v_makeOutListener(marker, overlay) {
+			return function() {
+				var idx = v_clickMarkers.indexOf(marker);
+				if (idx == -1){
+					overlay.setMap(null);
+				}
+			};
+		}
+
+		function v_clickListener(marker, overlay) {
+			return function() {
+				var idx = v_clickMarkers.indexOf(marker);
+				if (idx == -1){
+					v_clickMarkers.push(marker);
+					v_clickOverlays.push(overlay);
+					marker.setImage(v_clickImage);
+					overlay.setMap(map);
+				}
+				else {
+					v_clickMarkers.splice(idx, 1);
+					v_clickOverlays.splice(idx, 1);
+					marker.setImage(v_markerImage);
+					overlay.setMap(null);
+				}
+			};
 		}
 
 		function addRow(marker) {
@@ -239,23 +346,100 @@
 		}
 
 		function setMarkers(map) {
-			for (var i = 0; i < markers.length; i++) {
-				var idx = clickList.indexOf(markers[i]);
-				if (idx == -1){
-					markers[i].setMap(map);
+			if (markers.length > 0) {
+				var em = document.getElementById('btn2');
+
+				if (map == null) {
+					em.setAttribute( "onclick", "setMarkers(map)" );
+					em.value = "미선택 마커 보이기";
+				}
+				else {
+					em.setAttribute( "onclick", "setMarkers(null)" );
+					em.value = "미선택 마커 감추기";
+				}
+				for (var i = 0; i < markers.length; i++) {
+					var idx = clickMarkers.indexOf(markers[i]);
+					if (idx == -1){
+						markers[i].setMap(map);
+					}
+				}
+			}
+		}
+
+		function v_setMarkers(map) {
+			if (v_markers.length > 0) {
+				var em = document.getElementById('btn2');
+
+				if (map == null) {
+					em.setAttribute("onclick", "v_setMarkers(map)");
+					em.value = "미선택 마커 보이기";
+				}
+				else {
+					em.setAttribute("onclick", "v_setMarkers(null)");
+					em.value = "미선택 마커 감추기";
+				}
+				for (var i = 0; i < v_markers.length; i++) {
+					var idx = v_clickMarkers.indexOf(v_markers[i]);
+					if (idx == -1){
+						v_markers[i].setMap(map);
+					}
+				}
+			}
+		}
+
+		function setMod() {
+			if (v_markers.length > 0) {
+				var em = document.getElementById('btn');
+				var em2 = document.getElementById('btn2');
+				var m, vm = null;
+
+				if (em.value == "방문 완료 Ver.") {
+					vm = map;
+					em.value = "방문 예정 Ver.";
+					em2.setAttribute("onclick", "v_setMarkers(null)");
+					em2.value = "미선택 마커 감추기";
+				}
+				else {
+					m = map;
+					em.value = "방문 완료 Ver.";
+					em2.setAttribute("onclick", "setMarkers(null)");
+					em2.value = "미선택 마커 감추기";
+				}
+				for (var i = 0; i < markers.length; i++) {
+					markers[i].setMap(m);
+				}
+				for (var i = 0; i < clickOverlays.length; i++) {
+					clickOverlays[i].setMap(m);
+				}
+				for (var i = 0; i < v_markers.length; i++) {
+					v_markers[i].setMap(vm);
+				}
+				for (var i = 0; i < v_clickOverlays.length; i++) {
+					v_clickOverlays[i].setMap(vm);
 				}
 			}
 		}
 
 		function refresh() {
-			for (var i=clickList.length-1; i>=0; i--) {
-				clickList[i].setImage(markerImage);
-				clickOverlay[i].setMap(null);
-				delRow(clickList[i]);
-				clickList.splice(i, 1);
-				clickOverlay.splice(i, 1);
+			if (markers.length > 0) {
+				for (var i=clickMarkers.length-1; i>=0; i--) {
+					clickMarkers[i].setImage(markerImage);
+					clickOverlays[i].setMap(null);
+					delRow(clickMarkers[i]);
+					clickMarkers.splice(i, 1);
+					clickOverlays.splice(i, 1);
+				}
+
+				for (var i=v_clickMarkers.length-1; i>=0; i--) {
+					v_clickMarkers[i].setImage(v_markerImage);
+					v_clickOverlays[i].setMap(null);
+					v_clickMarkers.splice(i, 1);
+					v_clickOverlays.splice(i, 1);
+				}
+
+				setMarkers(map);
+				v_setMarkers(null);
 			}
-			setMarkers(map);
 		}
 
 		function getAddr(marker) {
