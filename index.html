@@ -10,11 +10,11 @@
 		<div id="map" style="width:100%;height:98%;"></div>
 		<font id="roundbox">엑셀자료목록(txt)</font>
 		<input type="file" id="txtFileInput" onchange="handleFiles(this.files)" accept=".txt">
-		<input type="button" class="button" id="btn" style="width:15%;" onclick="setMod()" value="방문 완료 Ver.">
+		<input type="button" class="button" id="btn" style="width:15%;" onclick="setMod()" value="방문결과 Page">
 		<input type="button" class="button" id="btn2" style="width:20%;" onclick="setMarkers(null)" value="미선택 마커 감추기">
 		<input type="button" class="button" style="width:12%;" onclick="refresh()" value="새로고침">
 	</div>
-	<div id="info" style="width:40%;">
+	<div id="result" style="width:40%;">
 		<table id='list' width='100%' border="1px solid black" align="center">
 			<colgroup>
 				<col width='8%' />
@@ -107,6 +107,7 @@
 
 		function markInMap(lines) {
 			refresh();
+			v_setMarkers(null);
 			setMarkers(null);
 			v_markers = [];
 			positions = [];
@@ -146,7 +147,6 @@
 					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 					var title = positions[idx].title;
 					var etc = ""
-					var count = 0;
 					for (var i=0; i<markers.length; i++) {
 						if (positions[idx].addr == getAddr(markers[i]))	{
 							return;
@@ -155,11 +155,11 @@
 					for (var i=0; i<positions.length; i++) {
 						if (idx != i && positions[idx].addr == positions[i].addr && positions[i].status != "방문") {
 							title = title + " " + positions[i].title;
-							count++;
 						}
 					}
-					if (count>0) {
-						etc = " 외 " + count + "곳";
+					var titleArr = title.split(' ');
+					if (titleArr.length > 1) {
+						etc = " 외 " + titleArr.length-1 + "곳";
 					}
 
 					var marker = new daum.maps.Marker({
@@ -188,23 +188,45 @@
 				if (status === daum.maps.services.Status.OK) {
 					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 					var title = positions[idx].title;
-					var content = [];
-					var etc = ""
-					var count = 0;
+					var info = '';
+					var radio = '';
+					var menu = '<div class="menu">';
+					var style = '<style>';
 					for (var i=0; i<v_markers.length; i++) {
 						if (positions[idx].addr == getAddr(v_markers[i]))	{
 							return;
 						}
 					}
-					for (var i=idx+1; i<positions.length; i++) {
+					for (var i=0; i<positions.length; i++) {
 						if (positions[idx].addr == positions[i].addr && positions[i].status == "방문") {
-							title = title + " " + positions[i].title;
-							count++;
+							if(idx == i) {
+								radio = radio + '<input type="radio" name="tabmenu' + idx + '" id="tab' + i + '" checked>';
+							}
+							else {
+								title = title + " " + positions[i].title;
+								radio = radio + '<input type="radio" name="tabmenu' + idx + '" id="tab' + i + '">';
+							}
+							info = info +'   <div class="info in' + i + '">' +
+										'       <div class="title">' +
+										'           ' +  positions[i].title + '. ' + positions[i].content +
+										'       </div>' +
+										'       <div class="body">' +
+										'          <div class="img">' +
+										'               <a target="_blank" href="img/' + positions[i].title + '.jpg"><img src="img/' + positions[i].title + '.jpg" width="286px" height="200px"></a>' +
+										'          </div>' +
+										'          <div class="desc">' +
+										'               <div class="ellipsis">' + positions[i].addr + '</div>' +
+										'               <div class="jibun ellipsis">' + positions[i].extra + '</div>' +
+										'          </div>' +
+										'       </div>' +
+										'   </div>';
+							menu = menu + '<label for="tab' + i + '"></label>';
+							style = style + 'input[id="tab' + i + '"]:checked ~ .in' + i + ' {display: block;}'
+										+ 'input[id="tab' + i + '"]:checked ~ .menu > label[for="tab' + i + '"] {background: red;}';
 						}
 					}
-					if (count>0) {
-						etc = " 외 " + count + "곳";
-					}
+					menu = menu + '</div>';
+					style = style + '</style>';
 
 					var marker = new daum.maps.Marker({
 						title: title,
@@ -215,22 +237,7 @@
 					v_markers.push(marker);
 
 					var overlay = new daum.maps.CustomOverlay({
-						content: '<div class="wrap">' +
-									'    <div class="info">' +
-									'        <div class="title">' +
-									'            ' + positions[idx].content +
-									'        </div>' +
-									'        <div class="body">' +
-									'            <div class="img">' +
-									'                <img src="img/' + positions[idx].title + '.jpg" width="73" height="70">' +
-									'           </div>' +
-									'            <div class="desc">' +
-									'                <div class="ellipsis">' + positions[idx].addr + '</div>' +
-									'                <div class="jibun ellipsis">' + positions[idx].extra + '</div>' +
-									'            </div>' +
-									'        </div>' +
-									'    </div>' +
-									'</div>',
+						content: style + '<div class="wrap">' + radio + info + menu + '</div>',
 						map: null,
 						position: marker.getPosition()
 					});
@@ -393,15 +400,15 @@
 				var em2 = document.getElementById('btn2');
 				var m, vm = null;
 
-				if (em.value == "방문 완료 Ver.") {
+				if (em.value == "방문결과 Page") {
 					vm = map;
-					em.value = "방문 예정 Ver.";
+					em.value = "방문예정 Page";
 					em2.setAttribute("onclick", "v_setMarkers(null)");
 					em2.value = "미선택 마커 감추기";
 				}
 				else {
 					m = map;
-					em.value = "방문 완료 Ver.";
+					em.value = "방문결과 Page";
 					em2.setAttribute("onclick", "setMarkers(null)");
 					em2.value = "미선택 마커 감추기";
 				}
@@ -429,16 +436,15 @@
 					clickMarkers.splice(i, 1);
 					clickOverlays.splice(i, 1);
 				}
-
 				for (var i=v_clickMarkers.length-1; i>=0; i--) {
 					v_clickMarkers[i].setImage(v_markerImage);
 					v_clickOverlays[i].setMap(null);
 					v_clickMarkers.splice(i, 1);
 					v_clickOverlays.splice(i, 1);
 				}
-
-				setMarkers(map);
+				document.getElementById('btn').value = "방문결과 Page";
 				v_setMarkers(null);
+				setMarkers(map);
 			}
 		}
 
