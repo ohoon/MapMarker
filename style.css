@@ -7,7 +7,7 @@ html, body {width: 99%;height: 99%;margin: 0px;padding: 0px; font-family: "나�
 
 div {margin: 1px;padding: 1px;}
 #data {float: left;}
-#info {float: right;}
+#result {float: right;}
 #txtFileInput {width: 29%;margin-right: 4%;}
 
 #list {font-size: 11pt;border-collapse: collapse;width: 100%;}
@@ -19,13 +19,16 @@ div {margin: 1px;padding: 1px;}
 .button {background-color: #4CAF50;border: none;color: white;padding: 6px 0px;text-align: center;text-decoration: none;display: inline-block;font-size: 13px;}
 #roundbox {border-radius: 5px;background: #4CAF50;padding: 5px;padding-left: 10px;padding-right: 10px;width: 60px;height: 30px;font-size: 10pt;color: white;}
 
-.wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 132px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;line-height: 1.5;}
+input[type="radio"] {display: none;}
+.menu {position: relative;text-align: center;}
+label[for*="tab"] {display: inline-block;padding: 5px;background: #ccc;cursor: pointer;margin: 3px;border-radius: 100%;box-shadow: 0px 1px 2px #888;}
+.wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 340px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;line-height: 1.5;}
 .wrap * {padding: 0;margin: 0;}
-.wrap .info {width: 286px;height: 120px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;}
+.wrap .info {width: 286px;height: 308px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;display: none;}
 .wrap .info:nth-child(1) {border: 0;box-shadow: 0px 1px 2px #888;}
-.info .title {padding: 5px 0 0 10px;height: 30px;background: #eee;border-bottom: 1px solid #ddd;font-size: 18px;font-weight: bold;}
+.info .title {padding: 5px 0 0 10px;height: 30px;background-color: #4CAF50;color: white;font-size: 16px;}
 .info .body {position: relative;overflow: hidden;}
-.info .desc {position: relative;margin: 13px 0 0 90px;height: 75px;}
+.info .desc {position: relative;margin: 13px 0 0 13px;height: 75px;}
 .desc .ellipsis {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
-.desc .jibun {font-size: 11px;color: #888;margin-top: -2px;}
-.info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
+.desc .jibun {font-size: 11px;color: #888;}
+.info .img {position: relative;width: 286px;height: 200px;color: #888;overflow: hidden;}
