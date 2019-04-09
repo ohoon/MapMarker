@@ -146,7 +146,7 @@
 				if (status === daum.maps.services.Status.OK) {
 					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 					var title = positions[idx].title;
-					var etc = ""
+					var etc = "";
 					var count = 0;
 					for (var i=0; i<markers.length; i++) {
 						if (positions[idx].addr == getAddr(markers[i]))	{
@@ -159,6 +159,7 @@
 							count = count + 1;
 						}
 					}
+					var titleArr = title.split(' ');
 					if (count > 0) {
 						etc = " 외 " + count + "곳";
 					}
