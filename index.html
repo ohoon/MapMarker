@@ -147,6 +147,7 @@
 					var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 					var title = positions[idx].title;
 					var etc = ""
+					var count = 0;
 					for (var i=0; i<markers.length; i++) {
 						if (positions[idx].addr == getAddr(markers[i]))	{
 							return;
@@ -155,11 +156,12 @@
 					for (var i=0; i<positions.length; i++) {
 						if (idx != i && positions[idx].addr == positions[i].addr && positions[i].status != "방문") {
 							title = title + " " + positions[i].title;
+							count = count + 1;
 						}
 					}
 					var titleArr = title.split(' ');
-					if (titleArr.length > 1) {
-						etc = " 외 " + (titleArr.length)-1 + "곳";
+					if (count > 0) {
+						etc = " 외 " + count + "곳";
 					}
 
 					var marker = new daum.maps.Marker({
