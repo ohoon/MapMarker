@@ -6,28 +6,32 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<div id="data" style="width:59%;height:100%;">
-		<div id="map" style="width:100%;height:98%;"></div>
-		<font id="roundbox">엑셀자료목록(txt)</font>
-		<input type="file" id="txtFileInput" onchange="handleFiles(this.files)" accept=".txt">
-		<input type="button" class="button" id="btn" style="width:15%;" onclick="setMod()" value="방문결과 Page">
-		<input type="button" class="button" id="btn2" style="width:20%;" onclick="setMarkers(null)" value="미선택 마커 감추기">
-		<input type="button" class="button" style="width:12%;" onclick="refresh()" value="새로고침">
+	<div class="main">
+		<div id="data" style="width:59%;height:98%;">
+			<div id="map" style="width:100%;height:98%;"></div>
+			<font id="roundbox">엑셀자료목록(txt)</font>
+			<input type="file" id="txtFileInput" onchange="handleFiles(this.files)" accept=".txt">
+			<input type="button" class="button" id="btn" style="width:15%;" onclick="setMod()" value="방문결과 Page">
+			<input type="button" class="button" id="btn2" style="width:20%;" onclick="setMarkers(null)" value="미선택 마커 감추기">
+			<input type="button" class="button" style="width:12%;" onclick="refresh()" value="새로고침">
+		</div>
+		<div id="result" style="width:40%;height:98%;">
+			<table id='list' width='100%' border="1px solid black" align="center">
+				<colgroup>
+					<col width='8%' />
+					<col width='30%' />
+					<col width='62%' />
+				</colgroup>
+				<tr id='row' bgcolor="#EAEAEA">
+					<th align='center'> No. </th>
+					<th align='center'> 업소명 </th>
+					<th align='center'> 주소 </th>
+				</tr>
+			</table>
+		</div>
 	</div>
-	<div id="result" style="width:40%;">
-		<table id='list' width='100%' border="1px solid black" align="center">
-			<colgroup>
-				<col width='8%' />
-				<col width='30%' />
-				<col width='62%' />
-			</colgroup>
-			<tr id='row' bgcolor="#EAEAEA">
-				<th align='center'> No. </th>
-				<th align='center'> 업소명 </th>
-				<th align='center'> 주소 </th>
-			</tr>
-		</table>
-	</div>
+	<div class="modal" id="bg"></div>
+	<div class="photo" id="pt"><img src="" id="popImg" width="100%" height="100%"></div>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08129cb1b2094fd36eb2e23bd0b20804&libraries=services"></script>
 	<script>
 		var container = document.getElementById('map');
@@ -214,7 +218,7 @@
 										'       </div>' +
 										'       <div class="body">' +
 										'          <div class="img">' +
-										'               <a target="_blank" href="img/' + positions[i].title + '.jpg"><img src="img/' + positions[i].title + '.jpg" width="286px" height="200px"></a>' +
+										'               <img src="img/' + positions[i].title + '.jpg" onclick="popUp(' + positions[i].title + ')" width="286px" height="200px">' +
 										'          </div>' +
 										'          <div class="desc">' +
 										'               <div class="ellipsis">' + positions[i].addr + '</div>' +
@@ -457,6 +461,20 @@
 					return positions[i].addr;
 				}
 			}
+		}
+
+		function popUp(filename) {
+			document.getElementById("bg").style.display = "block";
+			document.getElementById("pt").style.display = "block";
+			document.getElementById("popImg").src = "img/" + filename + ".jpg";
+			document.getElementById("popImg").setAttribute("onclick", "popDown()");
+		}
+
+		function popDown() {
+			document.getElementById("bg").style.display = "none";
+			document.getElementById("pt").style.display = "none";
+			document.getElementById("popImg").src = "";
+			document.getElementById("popImg").setAttribute("onclick", "");
 		}
 	</script>
 </body>
