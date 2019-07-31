@@ -1,0 +1,17 @@
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    With Application
+        .ScreenUpdating = False
+        Dim strFile As String, s As Variant
+        s = Split(ThisWorkbook.Name, ".")
+        strFile = ThisWorkbook.Path & "\" & s(0) & ".txt"
+        
+        Worksheets.Copy
+        .DisplayAlerts = False
+        With ActiveWorkbook
+            .SaveAs Filename:=strFile, FileFormat:=xlUnicodeText
+            .Close False
+        End With
+        .DisplayAlerts = True
+        .ScreenUpdating = True
+    End With
+End Sub
